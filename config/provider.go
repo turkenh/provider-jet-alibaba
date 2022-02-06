@@ -19,11 +19,13 @@ package config
 import (
 	tjconfig "github.com/crossplane/terrajet/pkg/config"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
+	"github.com/crossplane-contrib/provider-jet-alicloud/config/vpc"
 )
 
 const (
-	resourcePrefix = "template"
-	modulePath     = "github.com/crossplane-contrib/provider-jet-template"
+	resourcePrefix = "alicloud"
+	modulePath     = "github.com/crossplane-contrib/provider-jet-alicloud"
 )
 
 // GetProvider returns provider configuration
@@ -36,10 +38,13 @@ func GetProvider(resourceMap map[string]*schema.Resource) *tjconfig.Provider {
 	}
 
 	pc := tjconfig.NewProvider(resourceMap, resourcePrefix, modulePath,
-		tjconfig.WithDefaultResourceFn(defaultResourceFn))
+		tjconfig.WithDefaultResourceFn(defaultResourceFn),
+		tjconfig.WithIncludeList([]string{"vpc$"}),
+		)
 
 	for _, configure := range []func(provider *tjconfig.Provider){
 		// add custom config functions
+		vpc.Configure,
 	} {
 		configure(pc)
 	}
